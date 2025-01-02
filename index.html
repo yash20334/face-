@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection</title>
+</head>
+<body>
+    <h1>Real-Time Emotion Detection</h1>
+    <div>
+        <img src="{{ url_for('video_feed') }}" alt="Video Feed" style="width: 70%; height: auto;">
+    </div>
+    <button onclick="captureEmotion()">Capture Emotion</button>
+    <script>
+        async function captureEmotion() {
+            const response = await fetch('/capture');
+            const data = await response.json();
+            alert(data.message);
+        }
+    </script>
+</body>
+</html>
