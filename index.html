@@ -3,20 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emotion Detection</title>
+    <title>Emotion Detection - Image Capture</title>
+    <style>
+        video, canvas {
+            display: block;
+            margin: 10px auto;
+            border: 1px solid #ccc;
+            max-width: 100%;
+        }
+    </style>
 </head>
 <body>
     <h1>Real-Time Emotion Detection</h1>
-    <div>
-        <img src="{{ url_for('video_feed') }}" alt="Video Feed" style="width: 70%; height: auto;">
-    </div>
-    <button onclick="captureEmotion()">Capture Emotion</button>
+    <!-- Video feed from webcam -->
+    <video id="video" autoplay></video>
+
+    <!-- Canvas to display captured image -->
+    <canvas id="canvas" style="display: none;"></canvas>
+
+    <!-- Buttons -->
+    <button id="captureButton">Capture Image</button>
+    <button id="saveButton" style="display: none;">Save Image</button>
+
     <script>
-        async function captureEmotion() {
-            const response = await fetch('/capture');
-            const data = await response.json();
-            alert(data.message);
+        // Access the video element and buttons
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const captureButton = document.getElementById("captureButton");
+        const saveButton = document.getElementById("saveButton");
+
+        // Start video stream
+        async function startVideo() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                alert("Error accessing webcam: " + err.message);
+            }
         }
+
+        // Capture an image from the video feed
+        captureButton.addEventListener("click", () => {
+            const context = canvas.getContext("2d");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Show the canvas and the save button
+            canvas.style.display = "block";
+            saveButton.style.display = "inline-block";
+        });
+
+        // Save the captured image as a file
+        saveButton.addEventListener("click", () => {
+            const image = canvas.toDataURL("image/png");
+            const link = document.createElement("a");
+            link.href = image;
+            link.download = "captured_image.png";
+            link.click();
+        });
+
+        // Start the video stream when the page loads
+        window.onload = startVideo;
     </script>
 </body>
 </html>
